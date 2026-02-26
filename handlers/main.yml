@@ -107,6 +107,16 @@
     name: rsyslog.service
     state: restarted
 
+- name: restart-journald
+  ansible.builtin.systemd:
+    name: systemd-journald
+    state: restarted
+
+- name: restart-rsyslog
+  ansible.builtin.systemd:
+    name: rsyslog
+    state: restarted
+
 - name: AIDE - Check for DB file
   ansible.builtin.stat:
     path: "{{ rhel9stig_aide_db_file }}"

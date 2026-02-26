@@ -103,3 +103,215 @@
     enabled: false
     masked: true
     state: stopped
+
+### Hardening: safe subset implementations
+
+- name: "Ensure udf kernel module is blacklisted"
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/99-blacklist-udf.conf
+    content: |
+      # blocked by RHEL9-STIG
+      blacklist udf
+      install udf /bin/true
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Ensure squashfs kernel module is blacklisted"
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/99-blacklist-squashfs.conf
+    content: |
+      # blocked by RHEL9-STIG
+      blacklist squashfs
+      install squashfs /bin/true
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Ensure persistent network sysctl settings are present"
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/99-rhel9-stig.conf
+    content: |
+      # RHEL9-STIG network hardening
+      net.ipv4.ip_forward = 0
+      net.ipv4.conf.all.accept_redirects = 0
+      net.ipv4.conf.default.accept_redirects = 0
+      net.ipv4.conf.all.accept_source_route = 0
+      net.ipv4.conf.default.accept_source_route = 0
+      net.ipv6.conf.all.accept_ra = 0
+      net.ipv6.conf.default.accept_ra = 0
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Apply sysctl settings"
+  ansible.builtin.command:
+    cmd: sysctl --system
+    warn: false
+
+- name: "Ensure gpgcheck is enabled in /etc/yum.conf"
+  ansible.builtin.lineinfile:
+    path: /etc/yum.conf
+    regexp: '^gpgcheck\s*='
+    line: 'gpgcheck=1'
+    create: true
+
+- name: "Ensure gpgcheck is enabled in /etc/dnf/dnf.conf"
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/dnf.conf
+    regexp: '^gpgcheck\s*='
+    line: 'gpgcheck=1'
+    create: true
+
+- name: "Disable and mask bluetooth service"
+  ansible.builtin.systemd:
+    name: bluetooth.service
+    enabled: false
+    masked: true
+    state: stopped
+
+- name: "Ensure journald forwards logs to rsyslog"
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/journald.conf
+    regexp: '^#?ForwardToSyslog\s*='
+    line: 'ForwardToSyslog=yes'
+    create: true
+  notify: restart-journald
+
+- name: "Ensure rsyslog file creation mode is configured"
+  ansible.builtin.lineinfile:
+    path: /etc/rsyslog.conf
+    regexp: '^\$FileCreateMode\s+'
+    line: "$FileCreateMode 0640"
+    create: true
+  notify: restart-rsyslog
+
+  
+
+- name: "PLACEHOLDER | Ensure udf kernel module is not available"
+  debug:
+    msg: "TODO: blacklist udf module or remove package"
+
+- name: "PLACEHOLDER | Ensure squashfs kernel module is not available"
+  debug:
+    msg: "TODO: blacklist squashfs module or remove package"
+
+- name: "PLACEHOLDER | Ensure tmp is a separate partition"
+  debug:
+    msg: "TODO: verify /tmp is a separate mount and update fstab if required"
+
+- name: "PLACEHOLDER | Ensure separate partition exists for home"
+  debug:
+    msg: "TODO: verify /home is a separate mount and update fstab if required"
+
+- name: "PLACEHOLDER | Ensure separate partition exists for var"
+  debug:
+    msg: "TODO: verify /var is a separate mount and update fstab if required"
+
+- name: "PLACEHOLDER | Ensure separate partition exists for vartmp"
+  debug:
+    msg: "TODO: verify /var/tmp is a separate mount and update fstab if required"
+
+- name: "PLACEHOLDER | Ensure separate partition exists for varlog"
+  debug:
+    msg: "TODO: verify /var/log is a separate mount and update fstab if required"
+
+- name: "PLACEHOLDER | Ensure separate partition exists for varlogaudit"
+  debug:
+    msg: "TODO: verify /var/log/audit is a separate mount and update fstab if required"
+
+- name: "PLACEHOLDER | Ensure gpgcheck is globally activated"
+  debug:
+    msg: "TODO: ensure /etc/yum.conf and dnf config have gpgcheck=1"
+
+- name: "PLACEHOLDER | Ensure bluetooth services are not in use"
+  debug:
+    msg: "TODO: stop and disable bluetooth.service and bluetooth.target if present"
+
+- name: "PLACEHOLDER | Ensure ip forwarding is disabled"
+  debug:
+    msg: "TODO: set net.ipv4.ip_forward = 0 and persist via sysctl.d"
+
+- name: "PLACEHOLDER | Ensure secure icmp redirects are not accepted"
+  debug:
+    msg: "TODO: set net.ipv4.conf.all.accept_source_route and related sysctls"
+
+- name: "PLACEHOLDER | Ensure source routed packets are not accepted"
+  debug:
+    msg: "TODO: set net.ipv4.conf.*.accept_source_route to 0"
+
+- name: "PLACEHOLDER | Ensure ipv6 router advertisements are not accepted"
+  debug:
+    msg: "TODO: set net.ipv6.conf.all.accept_ra = 0 and persist"
+
+- name: "PLACEHOLDER | Ensure firewalld loopback traffic is configured"
+  debug:
+    msg: "TODO: add rich rules or zone configuration to allow loopback"
+
+- name: "PLACEHOLDER | Ensure journald is configured to send logs to rsyslog"
+  debug:
+    msg: "TODO: set ForwardToSyslog=yes in journald.conf and restart systemd-journald"
+
+- name: "PLACEHOLDER | Ensure rsyslog log file creation mode is configured"
+  debug:
+    msg: "TODO: configure $FileCreateMode or templates in rsyslog.conf"
+
+- name: "PLACEHOLDER | Ensure access to all logfiles has been configured"
+  debug:
+    msg: "TODO: set permissions and SELinux contexts for log files"
+
+- name: "PLACEHOLDER | Ensure audit logs are not automatically deleted"
+  debug:
+    msg: "TODO: configure log rotation and retention for audit logs"
+
+- name: "PLACEHOLDER | Ensure events that modify the sudo log file are collected"
+  debug:
+    msg: "TODO: add audit rules for /var/log/secure or sudo log files"
+
+- name: "PLACEHOLDER | Ensure events that modify date and time information are collected"
+  debug:
+    msg: "TODO: add audit rules for /etc/localtime and adjtime or relevant APIs"
+
+- name: "PLACEHOLDER | Ensure use of privileged commands are collected"
+  debug:
+    msg: "TODO: add audit rules to collect executions of privileged commands"
+
+- name: "PLACEHOLDER | Ensure events that modify the systems network environment are collected"
+  debug:
+    msg: "TODO: add audit rules for /etc/sysconfig/network-scripts and network config"
+
+- name: "PLACEHOLDER | Ensure events that modify usergroup information are collected"
+  debug:
+    msg: "TODO: add audit rules for /etc/group /etc/gshadow /etc/passwd /etc/shadow"
+
+- name: "PLACEHOLDER | Ensure login and logout events are collected"
+  debug:
+    msg: "TODO: add audit rules for pam login/logout events"
+
+- name: "PLACEHOLDER | Ensure session initiation information is collected"
+  debug:
+    msg: "TODO: add audit rules for session start (pam_session)"
+
+- name: "PLACEHOLDER | Ensure successful file system mounts are collected"
+  debug:
+    msg: "TODO: add audit rule for mount syscall or /proc/mounts changes"
+
+- name: "PLACEHOLDER | Ensure actions as another user are always logged"
+  debug:
+    msg: "TODO: ensure sudo log and audit capture identity changes (execve with setuid)"
+
+- name: "PLACEHOLDER | Ensure discretionary access control permission modification events are collected"
+  debug:
+    msg: "TODO: add audit rules for chmod, fchmod, chown, fchown syscalls"
+
+- name: "PLACEHOLDER | Ensure events that modify the systems Mandatory Access Controls are collected"
+  debug:
+    msg: "TODO: add audit rules for SELinux policy changes and semodule operations"
+
+- name: "PLACEHOLDER | Ensure kernel module loading unloading and modification is collected"
+  debug:
+    msg: "TODO: add audit rules for init_module, delete_module and /sbin/modprobe usage"
+
+- name: "PLACEHOLDER | Ensure audit configuration files mode is configured"
+  debug:
+    msg: "TODO: set permissions for /etc/audit/auditd.conf and related files"
