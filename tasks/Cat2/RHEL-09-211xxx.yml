@@ -37,9 +37,9 @@
     - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Uncomment banner keyword and set banner path"
       when: rhel9stig_sshd_required
       ansible.builtin.lineinfile:
-        path: /etc/ssh/sshd_config
+        path: "{{ rhel9stig_sshd_config_file }}"
         regexp: (?i)^(#|)Banner
-        line: 'Banner /etc/issue'
+        line: "Banner {{ rhel9stig_sshd_config.banner_file }}"
       notify: Restart_sshd
 
     - name: "MEDIUM | RHEL-09-211020 | PATCH | RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a command line user logon. | Set banner message"
@@ -50,7 +50,7 @@
         mode: 'u-x,go-wx'
         owner: root
       loop:
-        - /etc/issue
+        - "{{ rhel9stig_sshd_config.banner_file }}"
         - /etc/issue.net
 
 - name: "MEDIUM | RHEL-09-211030 | PATCH | The graphical display manager must not be the default target on RHEL 9 unless approved."
