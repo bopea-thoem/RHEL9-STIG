@@ -186,18 +186,12 @@
     create: true
   notify: restart-rsyslog
   
- - name: "Ensure udf kernel module is not available"
-   debug:
-     msg: "TODO: blacklist udf module or remove package"
 
- - name: "Ensure squashfs kernel module is not available"
-   debug:
-     msg: "TODO: blacklist squashfs module or remove package"
 
- - name: "Ensure tmp is a separate partition"
-   vars:
-     warn_control_id: "MEDIUM | Ensure /tmp is separate"
-   block:
+- name: "Ensure tmp is a separate partition"
+  vars:
+    warn_control_id: "MEDIUM | Ensure /tmp is separate"
+  block:
      - name: "MEDIUM | Ensure /tmp is a separate filesystem | PASS"
        when: "'/tmp' in ansible_facts['mounts'] | map(attribute='mount') | list"
        ansible.builtin.debug:
@@ -214,10 +208,10 @@
            ansible.builtin.import_tasks:
              file: warning_facts.yml
 
- - name: "Ensure separate partition exists for home"
-   vars:
-     warn_control_id: "MEDIUM | Ensure /home is separate"
-   block:
+- name: "Ensure separate partition exists for home"
+  vars:
+    warn_control_id: "MEDIUM | Ensure /home is separate"
+  block:
      - name: "MEDIUM | Ensure /home is a separate filesystem | PASS"
        when: "'/home' in ansible_facts['mounts'] | map(attribute='mount') | list"
        ansible.builtin.debug:
@@ -234,10 +228,10 @@
            ansible.builtin.import_tasks:
              file: warning_facts.yml
 
- - name: "Ensure separate partition exists for var"
-   vars:
-     warn_control_id: "MEDIUM | Ensure /var is separate"
-   block:
+- name: "Ensure separate partition exists for var"
+  vars:
+    warn_control_id: "MEDIUM | Ensure /var is separate"
+  block:
      - name: "MEDIUM | Ensure /var is a separate filesystem | PASS"
        when: "'/var' in ansible_facts['mounts'] | map(attribute='mount') | list"
        ansible.builtin.debug:
@@ -254,10 +248,10 @@
            ansible.builtin.import_tasks:
              file: warning_facts.yml
 
- - name: "Ensure separate partition exists for vartmp"
-   vars:
-     warn_control_id: "MEDIUM | Ensure /var/tmp is separate"
-   block:
+- name: "Ensure separate partition exists for vartmp"
+  vars:
+    warn_control_id: "MEDIUM | Ensure /var/tmp is separate"
+  block:
      - name: "MEDIUM | Ensure /var/tmp is a separate filesystem | PASS"
        when: "'/var/tmp' in ansible_facts['mounts'] | map(attribute='mount') | list"
        ansible.builtin.debug:
@@ -274,10 +268,10 @@
            ansible.builtin.import_tasks:
              file: warning_facts.yml
 
- - name: "Ensure separate partition exists for varlog"
-   vars:
-     warn_control_id: "MEDIUM | Ensure /var/log is separate"
-   block:
+- name: "Ensure separate partition exists for varlog"
+  vars:
+    warn_control_id: "MEDIUM | Ensure /var/log is separate"
+  block:
      - name: "MEDIUM | Ensure /var/log is a separate filesystem | PASS"
        when: "'/var/log' in ansible_facts['mounts'] | map(attribute='mount') | list"
        ansible.builtin.debug:
@@ -294,10 +288,10 @@
            ansible.builtin.import_tasks:
              file: warning_facts.yml
 
- - name: "Ensure separate partition exists for varlogaudit"
-   vars:
-     warn_control_id: "MEDIUM | Ensure /var/log/audit is separate"
-   block:
+- name: "Ensure separate partition exists for varlogaudit"
+  vars:
+    warn_control_id: "MEDIUM | Ensure /var/log/audit is separate"
+  block:
      - name: "MEDIUM | Ensure /var/log/audit is a separate filesystem | PASS"
        when: "rhel9stig_audit_log_filesystem in ansible_facts['mounts'] | map(attribute='mount') | list"
        ansible.builtin.debug:
