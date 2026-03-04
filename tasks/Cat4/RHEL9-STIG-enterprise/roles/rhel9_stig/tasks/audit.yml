@@ -1,0 +1,20 @@
+- name: Install auditd
+  package:
+    name: audit
+    state: present
+
+- name: Deploy audit rules
+  copy:
+    dest: /etc/audit/rules.d/stig.rules
+    content: |
+      -w /etc/sudoers -p wa -k scope
+      -w /etc/passwd -p wa -k identity
+      -w /etc/shadow -p wa -k identity
+      -w /var/log/lastlog -p wa -k logins
+      -a always,exit -F arch=b64 -S execve -k exec
+      -e 2
+
+- name: Restart auditd
+  service:
+    name: auditd
+    state: restarted

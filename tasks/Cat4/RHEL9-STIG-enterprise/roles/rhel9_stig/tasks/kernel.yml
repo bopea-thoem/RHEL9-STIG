@@ -1,0 +1,13 @@
+- name: Disable usb-storage
+  copy:
+    dest: /etc/modprobe.d/usb-storage.conf
+    content: |
+      install usb-storage /bin/true
+      blacklist usb-storage
+
+- name: Disable tipc module
+  copy:
+    dest: /etc/modprobe.d/tipc.conf
+    content: |
+      install tipc /bin/true
+      blacklist tipc

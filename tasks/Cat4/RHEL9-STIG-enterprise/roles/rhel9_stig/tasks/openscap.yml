@@ -1,0 +1,6 @@
+- name: Install OpenSCAP tools
+  package:
+    name:
+      - openscap-scanner
+      - scap-security-guide
+    state: present

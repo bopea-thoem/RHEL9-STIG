@@ -1,0 +1,5 @@
+- name: Configure faillock
+  lineinfile:
+    path: /etc/security/faillock.conf
+    regexp: '^deny'
+    line: 'deny = 5'

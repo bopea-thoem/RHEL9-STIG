@@ -1,0 +1,30 @@
+- name: Install nftables
+  package:
+    name: nftables
+    state: present
+
+- name: Configure nftables rules
+  copy:
+    dest: /etc/nftables.conf
+    content: |
+      table inet filter {
+        chain input {
+          type filter hook input priority 0;
+          iif lo accept
+          ct state established,related accept
+          tcp dport 22 accept
+          counter drop
+        }
+        chain forward {
+          counter drop
+        }
+        chain output {
+          accept
+        }
+      }
+
+- name: Enable nftables
+  service:
+    name: nftables
+    state: started
+    enabled: yes

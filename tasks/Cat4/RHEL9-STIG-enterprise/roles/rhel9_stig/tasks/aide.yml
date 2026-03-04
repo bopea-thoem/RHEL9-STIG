@@ -1,0 +1,7 @@
+- name: Install AIDE
+  package:
+    name: aide
+    state: present
+
+- name: Initialize AIDE
+  command: aide --init

@@ -1,0 +1,6 @@
+- name: Set GRUB password
+  shell: |
+    grub2-setpassword <<EOF
+    FCSupport@2026
+    FCSupport@2026
+    EOF

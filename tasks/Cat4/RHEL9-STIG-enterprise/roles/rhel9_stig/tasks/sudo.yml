@@ -1,0 +1,9 @@
+- name: Require tty for sudo
+  lineinfile:
+    path: /etc/sudoers
+    line: "Defaults use_pty"
+
+- name: Enable sudo logging
+  lineinfile:
+    path: /etc/sudoers
+    line: 'Defaults logfile="/var/log/sudo.log"'

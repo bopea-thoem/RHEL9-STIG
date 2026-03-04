@@ -1,0 +1,6 @@
+- name: Disable USB storage driver
+  copy:
+    dest: /etc/modprobe.d/disable-usb.conf
+    content: |
+      install usb-storage /bin/true
+      blacklist usb-storage

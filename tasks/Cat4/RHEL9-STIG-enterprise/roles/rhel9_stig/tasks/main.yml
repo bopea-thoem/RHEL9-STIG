@@ -1,0 +1,17 @@
+- import_tasks: kernel.yml
+- import_tasks: exploit_protection.yml
+- import_tasks: filesystem.yml
+- import_tasks: usb.yml
+- import_tasks: selinux.yml
+- import_tasks: sysctl.yml
+- import_tasks: firewall.yml
+- import_tasks: ssh.yml
+- import_tasks: sudo.yml
+- import_tasks: password.yml
+- import_tasks: pam.yml
+- import_tasks: aide.yml
+- import_tasks: audit.yml
+- import_tasks: fips.yml
+- import_tasks: bootloader.yml
+- import_tasks: openscap.yml
+- import_tasks: report.yml
