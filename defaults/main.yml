@@ -13,6 +13,8 @@ skip_os_check: false
 rhel9stig_cat1: true
 rhel9stig_cat2: true
 rhel9stig_cat3: true
+# Enable CAT IV custom/enterprise hardening rules.  Set to true to run.
+rhel9stig_cat4: true
 
 # We've defined disruption-high to indicate items that are likely to cause
 # disruption in a normal workflow.  These items can be remediated automatically

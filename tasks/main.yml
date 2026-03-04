@@ -112,6 +112,14 @@
   ansible.builtin.import_tasks:
     file: Cat3/main.yml
 
+- name: Include CAT IV patches
+  when: rhel9stig_cat4
+  tags:
+    - CAT4
+    - enterprise
+  ansible.builtin.import_tasks:
+    file: Cat4/tasks/main.yml
+
 - name: Run auditd logic
   when:
     - update_audit_template

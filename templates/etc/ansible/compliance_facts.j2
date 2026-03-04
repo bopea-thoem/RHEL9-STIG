@@ -8,6 +8,7 @@ Benchmark_run_date = {{ '%Y-%m-%d - %H:%M:%S' | ansible.builtin.strftime }}
 cat_1_hardening_enabled = {{ rhel9stig_cat1 }}
 cat_2_hardening_enabled = {{ rhel9stig_cat2 }}
 cat_3_hardening_enabled = {{ rhel9stig_cat3 }}
+cat_4_hardening_enabled = {{ rhel9stig_cat4 }}
 
 {% if ansible_run_tags | length > 0 %}
 # If tags used to stipulate run level
@@ -19,6 +20,9 @@ Cat_2_Server_tag_run = true
 {% endif %}
 {% if 'rhel9stig_cat3' in ansible_run_tags %}
 Cat_3_Server_tag_run = true
+{% endif %}
+{% if 'rhel9stig_cat4' in ansible_run_tags %}
+Cat_4_Server_tag_run = true
 {% endif %}
 {% endif %}
 
