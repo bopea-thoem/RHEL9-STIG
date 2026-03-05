@@ -22,3 +22,33 @@
     path: /etc/ssh/sshd_config
     regexp: '^ClientAliveInterval'
     line: 'ClientAliveInterval 300'
+
+- name: Configure ClientAliveCountMax
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^ClientAliveCountMax'
+    line: 'ClientAliveCountMax 0'
+
+- name: Disable SSH forwarding
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^DisableForwarding'
+    line: 'DisableForwarding yes'
+
+- name: Disable GSSAPI authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^GSSAPIAuthentication'
+    line: 'GSSAPIAuthentication no'
+
+- name: Configure MaxStartups
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^MaxStartups'
+    line: 'MaxStartups 10:30:60'
+
+- name: Configure MACs
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^MACs'
+    line: 'MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256'

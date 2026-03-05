@@ -3,3 +3,62 @@
     path: /etc/security/faillock.conf
     regexp: '^deny'
     line: 'deny = 5'
+
+- name: Enable pam pwhistory
+  lineinfile:
+    path: /etc/pam.d/system-auth
+    line: 'password requisite pam_pwhistory.so use_authtok remember=5'
+
+- name: Configure password unlock time
+  lineinfile:
+    path: /etc/security/faillock.conf
+    regexp: '^unlock_time'
+    line: 'unlock_time = 900'
+
+- name: Ensure password failed attempts lockout includes root account
+  lineinfile:
+    path: /etc/security/faillock.conf
+    regexp: '^even_deny_root'
+    line: 'even_deny_root'
+
+- name: Configure password number of changed characters
+  lineinfile:
+    path: /etc/security/pwquality.conf
+    regexp: '^difok'
+    line: 'difok = 8'
+
+- name: Configure password same consecutive characters
+  lineinfile:
+    path: /etc/security/pwquality.conf
+    regexp: '^maxrepeat'
+    line: 'maxrepeat = 3'
+
+- name: Configure password maximum sequential characters
+  lineinfile:
+    path: /etc/security/pwquality.conf
+    regexp: '^maxsequence'
+    line: 'maxsequence = 3'
+
+- name: Enforce password quality for root
+  lineinfile:
+    path: /etc/security/pwquality.conf
+    regexp: '^enforce_for_root'
+    line: 'enforce_for_root'
+
+- name: Configure password history remember
+  lineinfile:
+    path: /etc/security/pwquality.conf
+    regexp: '^remember'
+    line: 'remember = 5'
+
+- name: Configure password expiration
+  lineinfile:
+    path: /etc/login.defs
+    regexp: '^PASS_MAX_DAYS'
+    line: 'PASS_MAX_DAYS 90'
+
+- name: Configure inactive password lock
+  lineinfile:
+    path: /etc/login.defs
+    regexp: '^PASS_WARN_AGE'
+    line: 'PASS_WARN_AGE 7'

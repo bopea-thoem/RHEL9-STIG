@@ -128,16 +128,49 @@
     group: root
     mode: '0644'
 
+- name: "Ensure usb-storage kernel module is not available"
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/99-blacklist-usb-storage.conf
+    content: |
+      # blocked by RHEL9-STIG
+      blacklist usb-storage
+      install usb-storage /bin/true
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Ensure tipc kernel module is not available"
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/99-blacklist-tipc.conf
+    content: |
+      # blocked by RHEL9-STIG
+      blacklist tipc
+      install tipc /bin/true
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: "Ensure persistent network sysctl settings are present"
   ansible.builtin.copy:
     dest: /etc/sysctl.d/99-rhel9-stig.conf
     content: |
       # RHEL9-STIG network hardening
       net.ipv4.ip_forward = 0
+      net.ipv4.conf.all.send_redirects = 0
+      net.ipv4.conf.default.send_redirects = 0
       net.ipv4.conf.all.accept_redirects = 0
       net.ipv4.conf.default.accept_redirects = 0
+      net.ipv4.conf.all.secure_redirects = 0
+      net.ipv4.conf.default.secure_redirects = 0
       net.ipv4.conf.all.accept_source_route = 0
       net.ipv4.conf.default.accept_source_route = 0
+      net.ipv4.conf.all.rp_filter = 1
+      net.ipv4.conf.default.rp_filter = 1
+      net.ipv4.conf.all.log_martians = 1
+      net.ipv4.conf.default.log_martians = 1
+      net.ipv4.icmp_ignore_bogus_error_responses = 1
+      net.ipv4.icmp_echo_ignore_broadcasts = 1
+      net.ipv4.tcp_syncookies = 1
       net.ipv6.conf.all.accept_ra = 0
       net.ipv6.conf.default.accept_ra = 0
     owner: root
@@ -307,3 +340,72 @@
          - name: "MEDIUM | Ensure /var/log/audit is a separate filesystem | Warning facts"
            ansible.builtin.import_tasks:
              file: warning_facts.yml
+
+- name: "Ensure permissions on etccrontab are configured"
+  ansible.builtin.file:
+    path: /etc/crontab
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: "Ensure permissions on etccron.hourly are configured"
+  ansible.builtin.file:
+    path: /etc/cron.hourly
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: "Ensure permissions on etccron.daily are configured"
+  ansible.builtin.file:
+    path: /etc/cron.daily
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: "Ensure permissions on etccron.weekly are configured"
+  ansible.builtin.file:
+    path: /etc/cron.weekly
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: "Ensure permissions on etccron.monthly are configured"
+  ansible.builtin.file:
+    path: /etc/cron.monthly
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: "Ensure permissions on etccron.d are configured"
+  ansible.builtin.file:
+    path: /etc/cron.d
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: "Ensure crontab is restricted to authorized users"
+  ansible.builtin.file:
+    path: /etc/cron.allow
+    owner: root
+    group: root
+    mode: '0600'
+    state: touch
+
+- name: "Ensure access to the su command is restricted"
+  ansible.builtin.file:
+    path: /etc/pam.d/su
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Ensure default user shell timeout is configured"
+  ansible.builtin.lineinfile:
+    path: /etc/bash.bashrc
+    line: "TMOUT=600"
+    create: true
+
+- name: "Ensure default user umask is configured"
+  ansible.builtin.lineinfile:
+    path: /etc/bash.bashrc
+    line: "umask 027"
+    create: true

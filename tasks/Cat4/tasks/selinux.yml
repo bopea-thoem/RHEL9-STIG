@@ -3,3 +3,9 @@
     path: /etc/selinux/config
     regexp: "^SELINUX="
     line: SELINUX=enforcing
+
+- name: Ensure SELinux policy is configured
+  lineinfile:
+    path: /etc/selinux/config
+    regexp: "^SELINUXTYPE="
+    line: SELINUXTYPE=targeted
