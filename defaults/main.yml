@@ -647,7 +647,7 @@ rhel9stig_sshd_config:
 ## Bootloader/Grub settings
 rhel9stig_grub_superuser: root
 rhel9stig_bootloader_password_hash: 'grub.pbkdf2.sha512.changethispassword'  # pragma: allowlist secret
-rhel9stig_set_bootloader_password: true
+rhel9stig_set_bootloader_password: false
 
 ## Banner
 rhel9stig_workaround_for_disa_benchmark: true
