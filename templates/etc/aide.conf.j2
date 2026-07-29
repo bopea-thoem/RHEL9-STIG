@@ -1,0 +1,343 @@
+{{ file_managed_by_ansible }}
+
+@@define DBDIR /var/lib/aide
+@@define LOGDIR /var/log/aide
+
+# The location of the database to be read.
+{% if discovered_aide_version is version_compare('0.18', '<=') %}
+# AIDE < 0.18 uses the legacy `database` directive.
+database=file:@@{DBDIR}/aide.db.gz
+{% else %}
+# AIDE >= 0.18 renamed the input directive `database` -> `database_in`.
+# `file:` URL prefix MUST be kept (plain paths are rejected by aide >= 0.18).
+database_in=file:@@{DBDIR}/aide.db.gz
+{% endif %}
+
+# The location of the database to be written.
+#database_out=sql:host:port:database:login_name:passwd:table
+#database_out=file:aide.db.new
+database_out=file:@@{DBDIR}/aide.db.new.gz
+
+# Whether to gzip the output to database.
+gzip_dbout=yes
+
+{% if discovered_aide_version is version_compare('0.18', '<=') %}
+# Default verbosity (aide < 0.18; replaced by log_level/report_level in 0.18+).
+verbose=5
+
+{% else %}
+# `verbose=N` was removed in AIDE 0.18 (replaced by log_level/report_level);
+# omitted here so `aide --init` works on aide >= 0.18 (e.g. RHEL 9.8 / aide-0.19.2).
+{% endif %}
+
+report_url=file:@@{LOGDIR}/aide.log
+report_url=stdout
+#report_url=stderr
+#NOT IMPLEMENTED report_url=mailto:root@foo.com
+#NOT IMPLEMENTED report_url=syslog:LOG_AUTH
+
+# These are the default rules.
+#
+#p:      permissions
+#i:      inode:
+#n:      number of links
+#u:      user
+#g:      group
+#s:      size
+#b:      block count
+#m:      mtime
+#a:      atime
+#c:      ctime
+#S:      check for growing size
+#acl:           Access Control Lists
+#selinux        SELinux security context
+#xattrs:        Extended file attributes
+#md5:    md5 checksum
+#sha1:   sha1 checksum
+#sha256:        sha256 checksum
+#sha512:        sha512 checksum
+#rmd160: rmd160 checksum
+#tiger:  tiger checksum
+
+#haval:  haval checksum (MHASH only)
+#gost:   gost checksum (MHASH only)
+#crc32:  crc32 checksum (MHASH only)
+#whirlpool:     whirlpool checksum (MHASH only)
+
+{% if rhel_09_651030 %}
+  {% if discovered_aide_version is version_compare('0.18', '>=') %}
+ALL = p+i+n+u+g+s+m+growing+sha512+acl+xattrs+selinux
+  {% else %}
+ALL = p+i+n+u+g+s+m+S+sha512+acl+xattrs+selinux
+  {% endif %}
+{% endif %}
+
+{% if discovered_aide_version is version_compare('0.18', '>=') %}
+FIPSR = p+i+n+u+g+s+m+growing+sha512+acl+xattrs+selinux
+{% else %}
+FIPSR = p+i+n+u+g+s+m+S+sha512+acl+xattrs+selinux
+{% endif %}
+
+
+# You can create custom rules like this.
+# With MHASH...
+# ALLXTRAHASHES = sha1+rmd160+sha512+whirlpool+tiger+haval+gost+crc32
+# ALLXTRAHASHES = sha512
+
+# Everything but access time (Ie. all changes)
+EVERYTHING = FIPSR
+
+# Sane, with one good hash.
+# NORMAL = sha512
+NORMAL = FIPSR
+
+# For directories, don't bother doing hashes.
+DIR = FIPSR
+
+# Access control only.
+PERMS = FIPSR
+
+# Access + inode changes + file type.
+STATIC = FIPSR+ftype
+
+# Logfiles only check access w/o xattrs.
+LOG = FIPSR+ftype
+
+# Content + file type.
+CONTENT = FIPSR+ftype
+
+# Extended content + file type + access.
+EXTCONTENT = FIPSR
+
+# Some files get updated automatically, so the inode/ctime/mtime change
+# but we want to know when the data inside them changes.
+DATAONLY =  FIPSR
+
+# Next decide what directories/files you want in the database. Aide
+# uses a first match system. Put file specific instructions before generic
+# matches. e.g. Put file matches before directories.
+
+/boot/   EXTCONTENT
+/bin/    EXTCONTENT
+/sbin/   EXTCONTENT
+/lib/    EXTCONTENT
+/lib64/  EXTCONTENT
+/opt/    CONTENT
+
+# Admin's dot files constantly change, just check perms.
+/root/\..* PERMS
+# Otherwise get all of /root.
+/root/   EXTCONTENT
+
+# These are too volatile.
+!/usr/src/
+!/usr/tmp/
+# Otherwise get all of /usr.
+/usr/    EXTCONTENT
+
+# Check only permissions, user, group, seliunx for /etc, but
+# cover some important files closely.
+!/etc/mtab$
+
+# Ignore backup files
+!/etc/.*~
+
+# trusted databases
+/etc/hosts$ EXTCONTENT
+/etc/host.conf$ EXTCONTENT
+/etc/hostname$ EXTCONTENT
+/etc/issue$ EXTCONTENT
+/etc/issue.net$ EXTCONTENT
+/etc/protocols$ EXTCONTENT
+/etc/services$ EXTCONTENT
+/etc/localtime$ EXTCONTENT
+/etc/alternatives/ EXTCONTENT
+/etc/mime.types$ EXTCONTENT
+/etc/terminfo/ EXTCONTENT
+/etc/exports$  EXTCONTENT
+/etc/fstab$    EXTCONTENT
+/etc/passwd$   EXTCONTENT
+/etc/group$    EXTCONTENT
+/etc/gshadow$  EXTCONTENT
+/etc/shadow$   EXTCONTENT
+/etc/security/opasswd$   EXTCONTENT
+/etc/skel/ EXTCONTENT
+
+# networking
+/etc/hosts.allow$   EXTCONTENT
+/etc/hosts.deny$    EXTCONTENT
+/etc/firewalld/ EXTCONTENT
+/etc/NetworkManager/ EXTCONTENT
+/etc/networks$ EXTCONTENT
+/etc/dhcp/ EXTCONTENT
+/etc/wpa_supplicant/ EXTCONTENT
+/etc/resolv.conf$ DATAONLY
+/etc/nscd.conf$ NORMAL
+
+# logins and accounts
+/etc/login.defs$ EXTCONTENT
+/etc/libuser.conf$ EXTCONTENT
+/var/log/faillog$ PERMS
+/var/log/lastlog$ PERMS
+/var/run/faillock/ PERMS
+/etc/pam.d/ EXTCONTENT
+/etc/security$ EXTCONTENT
+/etc/securetty$ EXTCONTENT
+/etc/polkit-1/ EXTCONTENT
+/etc/sudo.conf$ EXTCONTENT
+/etc/sudoers$ EXTCONTENT
+/etc/sudoers.d/ EXTCONTENT
+
+# Shell/X starting files
+/etc/profile$ EXTCONTENT
+/etc/profile.d/ EXTCONTENT
+/etc/bashrc$ EXTCONTENT
+/etc/bash_completion.d/ EXTCONTENT
+/etc/zprofile$ EXTCONTENT
+/etc/zshrc$ EXTCONTENT
+/etc/zlogin$ EXTCONTENT
+/etc/zlogout$ EXTCONTENT
+/etc/X11/ EXTCONTENT
+/etc/shells$ EXTCONTENT
+
+# Pkg manager
+/etc/yum.conf$ EXTCONTENT
+/etc/yumex.conf$ EXTCONTENT
+/etc/yumex.profiles.conf$ EXTCONTENT
+/etc/yum/ EXTCONTENT
+/etc/yum.repos.d/ EXTCONTENT
+
+# This gets new/removes-old filenames daily.
+!/var/log/sa/
+# As we are checking it, we've truncated yesterdays size to zero.
+!/var/log/aide.log
+
+# auditing
+# AIDE produces an audit record, so this becomes perpetual motion.
+# /var/log/audit/ PERMS+ANF+ARF
+/etc/audit/ EXTCONTENT
+/etc/audisp/ EXTCONTENT
+/etc/libaudit.conf$ EXTCONTENT
+/etc/aide.conf$  EXTCONTENT
+
+# System logs
+/etc/rsyslog.conf$ EXTCONTENT
+/etc/rsyslog.d/ EXTCONTENT
+/etc/logrotate.conf$ EXTCONTENT
+/etc/logrotate.d/ EXTCONTENT
+/var/log/ LOG+ANF+ARF
+/var/run/utmp$ LOG
+
+# secrets
+/etc/pkcs11/ EXTCONTENT
+/etc/pki/ EXTCONTENT
+/etc/ssl/ EXTCONTENT
+/etc/certmonger/ EXTCONTENT
+
+# init system
+/etc/systemd/ EXTCONTENT
+/etc/sysconfig/ EXTCONTENT
+/etc/rc.d/ EXTCONTENT
+/etc/tmpfiles.d/ EXTCONTENT
+/etc/machine-id$ EXTCONTENT
+
+# boot config
+/etc/grub.d/ EXTCONTENT
+/etc/grub2.cfg$ EXTCONTENT
+/etc/dracut.conf$ EXTCONTENT
+/etc/dracut.conf.d/ EXTCONTENT
+
+# glibc linker
+/etc/ld.so.cache$ EXTCONTENT
+/etc/ld.so.conf$ EXTCONTENT
+/etc/ld.so.conf.d/ EXTCONTENT
+
+# kernel config
+/etc/sysctl.conf$ EXTCONTENT
+/etc/sysctl.d/ EXTCONTENT
+/etc/modprobe.d/ EXTCONTENT
+/etc/modules-load.d/ EXTCONTENT
+/etc/depmod.d/ EXTCONTENT
+/etc/udev/ EXTCONTENT
+/etc/crypttab$ EXTCONTENT
+
+#### Daemons ####
+
+# cron jobs
+/var/spool/at/ CONTENT
+/etc/at.allow$ CONTENT
+/etc/at.deny$ CONTENT
+/etc/cron.allow$ EXTCONTENT
+/etc/cron.deny$ EXTCONTENT
+/etc/cron.d/ EXTCONTENT
+/etc/cron.daily/ EXTCONTENT
+/etc/cron.hourly/ EXTCONTENT
+/etc/cron.monthly/ EXTCONTENT
+/etc/cron.weekly/ EXTCONTENT
+/etc/crontab$ EXTCONTENT
+/var/spool/cron/root/ CONTENT
+/etc/anacrontab$ EXTCONTENT
+
+# time keeping
+/etc/ntp.conf$ EXTCONTENT
+/etc/ntp/ EXTCONTENT
+/etc/chrony.conf$ EXTCONTENT
+/etc/chrony.keys$ EXTCONTENT
+
+# mail
+/etc/aliases$ EXTCONTENT
+/etc/aliases.db$ EXTCONTENT
+/etc/postfix/ EXTCONTENT
+/etc/mail.rc$ EXTCONTENT
+/etc/mailcap$ EXTCONTENT
+
+# ssh
+/etc/ssh/sshd_config$ EXTCONTENT
+/etc/ssh/ssh_config$ EXTCONTENT
+
+# stunnel
+/etc/stunnel/ EXTCONTENT
+
+# ftp
+/etc/vsftpd.conf$ CONTENT
+/etc/vsftpd/ CONTENT
+
+# printing
+/etc/cups/ EXTCONTENT
+/etc/cupshelpers/ EXTCONTENT
+/etc/avahi/ EXTCONTENT
+
+# web server
+/etc/httpd/ EXTCONTENT
+
+# dns
+/etc/named/ EXTCONTENT
+/etc/named.conf$ EXTCONTENT
+/etc/named.iscdlv.key$ EXTCONTENT
+/etc/named.rfc1912.zones$ EXTCONTENT
+/etc/named.root.key$ EXTCONTENT
+
+# xinetd
+/etc/xinetd.d/ EXTCONTENT
+
+# Now everything else in /etc.
+/etc/    PERMS
+
+# With AIDE's default verbosity level of 5, these would give lots of
+# warnings upon tree traversal. It might change with future version.
+#
+#=/lost\+found    DIR
+#=/home           DIR
+
+{% if rhel_09_651025 %}
+# Audit Tools
+/usr/sbin/auditctl p+i+n+u+g+s+b+acl+xattrs+sha512
+/usr/sbin/auditd p+i+n+u+g+s+b+acl+xattrs+sha512
+/usr/sbin/ausearch p+i+n+u+g+s+b+acl+xattrs+sha512
+/usr/sbin/aureport p+i+n+u+g+s+b+acl+xattrs+sha512
+/usr/sbin/autrace p+i+n+u+g+s+b+acl+xattrs+sha512
+/usr/sbin/augenrules p+i+n+u+g+s+b+acl+xattrs+sha512
+{% endif %}
+
+# Ditto /var/log/sa/ same reason...
+!/var/log/httpd/

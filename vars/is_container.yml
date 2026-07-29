@@ -1,0 +1,268 @@
+---
+
+# File to skip controls if container
+# Based on standard image no changes
+# it expected all pkgs required for the container are already installed
+
+## controls
+rhel9stig_sshd_required: false
+rhel9stig_auditd_required: false
+
+# 211xxx - systemd / boot
+rhel_09_211040: false
+rhel_09_211045: false
+rhel_09_211050: false
+rhel_09_211055: false
+
+# 212xxx - grub bootloader (managed by host OS)
+rhel_09_212010: false
+rhel_09_212015: false
+rhel_09_212020: false
+rhel_09_212025: false
+rhel_09_212030: false
+rhel_09_212035: false
+rhel_09_212040: false
+rhel_09_212045: false
+rhel_09_212050: false
+rhel_09_212055: false
+
+# 213xxx - sysctl / modprobe / kernel (managed by host OS)
+rhel_09_213010: false
+rhel_09_213015: false
+rhel_09_213020: false
+rhel_09_213025: false
+rhel_09_213030: false
+rhel_09_213035: false
+rhel_09_213040: false
+rhel_09_213045: false
+rhel_09_213050: false
+rhel_09_213055: false
+rhel_09_213060: false
+rhel_09_213065: false
+rhel_09_213070: false
+rhel_09_213075: false
+rhel_09_213080: false
+rhel_09_213100: false
+rhel_09_213105: false
+rhel_09_213110: false
+rhel_09_213115: false
+
+# 215xxx - packages not required in base container image
+rhel_09_215075: false
+rhel_09_215080: false
+rhel_09_215085: false
+rhel_09_215090: false
+rhel_09_215095: false
+
+# 231xxx - mount / filesystem
+rhel_09_231040: false
+rhel_09_231110: false
+rhel_09_231115: false
+rhel_09_231120: false
+rhel_09_231195: false
+
+# 232xxx - audit binaries / cron / file permissions
+rhel_09_232035: false
+rhel_09_232040: false
+rhel_09_232180: false
+rhel_09_232185: false
+rhel_09_232220: false
+rhel_09_232225: false
+rhel_09_232230: false
+rhel_09_232235: false
+rhel_09_232250: false
+rhel_09_232255: false
+rhel_09_232265: false
+
+# 251xxx - firewalld (managed by host OS / CNI)
+rhel_09_251010: false
+rhel_09_251015: false
+rhel_09_251020: false
+rhel_09_251025: false
+rhel_09_251030: false
+rhel_09_251035: false
+rhel_09_251040: false
+rhel_09_251045: false
+
+# 252xxx - chrony / DNS / IPSec (managed by host OS)
+rhel_09_252010: false
+rhel_09_252015: false
+rhel_09_252020: false
+rhel_09_252025: false
+rhel_09_252030: false
+rhel_09_252035: false
+rhel_09_252065: false
+
+# 253xxx - sysctl network (managed by host OS)
+rhel_09_253010: false
+rhel_09_253015: false
+rhel_09_253020: false
+rhel_09_253025: false
+rhel_09_253030: false
+rhel_09_253035: false
+rhel_09_253040: false
+rhel_09_253045: false
+rhel_09_253050: false
+rhel_09_253055: false
+rhel_09_253060: false
+rhel_09_253065: false
+rhel_09_253070: false
+rhel_09_253075: false
+
+# 254xxx - sysctl IPv6 (managed by host OS)
+rhel_09_254010: false
+rhel_09_254015: false
+rhel_09_254020: false
+rhel_09_254025: false
+rhel_09_254030: false
+rhel_09_254035: false
+rhel_09_254040: false
+
+# 291xxx - modprobe / USBGuard
+rhel_09_291010: false
+rhel_09_291015: false
+rhel_09_291020: false
+rhel_09_291025: false
+rhel_09_291030: false
+rhel_09_291035: false
+
+# 411xxx - interactive users
+rhel_09_411025: false
+rhel_09_411030: false
+rhel_09_411035: false
+rhel_09_411045: false
+
+# 412xxx - tmux
+rhel_09_412035: false
+
+# 431xxx - SELinux (enforcement from host OS)
+rhel_09_431015: false
+rhel_09_431020: false
+rhel_09_431025: false
+rhel_09_431030: false
+
+# 432xxx - sudo
+rhel_09_432010: false
+rhel_09_432015: false
+rhel_09_432020: false
+rhel_09_432025: false
+rhel_09_432030: false
+rhel_09_432035: false
+
+# 433xxx - fapolicy
+rhel_09_433010: false
+rhel_09_433015: false
+
+# 651xxx - AIDE
+rhel_09_651010: false
+rhel_09_651015: false
+rhel_09_651020: false
+rhel_09_651025: false
+rhel_09_651030: false
+rhel_09_651035: false
+
+# 652xxx - rsyslog (handled by host OS / sidecar / daemonset)
+rhel_09_652010: false
+rhel_09_652015: false
+rhel_09_652020: false
+rhel_09_652025: false
+rhel_09_652030: false
+rhel_09_652035: false
+rhel_09_652040: false
+rhel_09_652045: false
+rhel_09_652050: false
+rhel_09_652055: false
+rhel_09_652060: false
+
+# 653xxx - auditd config (handled by host OS / sidecar / daemonset)
+rhel_09_653010: false
+rhel_09_653015: false
+rhel_09_653020: false
+rhel_09_653025: false
+rhel_09_653030: false
+rhel_09_653035: false
+rhel_09_653040: false
+rhel_09_653045: false
+rhel_09_653050: false
+rhel_09_653055: false
+rhel_09_653060: false
+rhel_09_653065: false
+rhel_09_653070: false
+rhel_09_653075: false
+rhel_09_653080: false
+rhel_09_653085: false
+rhel_09_653090: false
+rhel_09_653095: false
+rhel_09_653100: false
+rhel_09_653105: false
+rhel_09_653110: false
+rhel_09_653120: false
+rhel_09_653130: false
+
+# 654xxx - auditd rules (handled by host OS / sidecar / daemonset)
+rhel_09_654010: false
+rhel_09_654015: false
+rhel_09_654020: false
+rhel_09_654025: false
+rhel_09_654030: false
+rhel_09_654035: false
+rhel_09_654040: false
+rhel_09_654045: false
+rhel_09_654050: false
+rhel_09_654055: false
+rhel_09_654060: false
+rhel_09_654065: false
+rhel_09_654070: false
+rhel_09_654075: false
+rhel_09_654080: false
+rhel_09_654085: false
+rhel_09_654090: false
+rhel_09_654095: false
+rhel_09_654100: false
+rhel_09_654105: false
+rhel_09_654110: false
+rhel_09_654115: false
+rhel_09_654120: false
+rhel_09_654125: false
+rhel_09_654130: false
+rhel_09_654135: false
+rhel_09_654140: false
+rhel_09_654145: false
+rhel_09_654150: false
+rhel_09_654155: false
+rhel_09_654160: false
+rhel_09_654165: false
+rhel_09_654170: false
+rhel_09_654175: false
+rhel_09_654180: false
+rhel_09_654185: false
+rhel_09_654190: false
+rhel_09_654195: false
+rhel_09_654200: false
+rhel_09_654205: false
+rhel_09_654210: false
+rhel_09_654215: false
+rhel_09_654220: false
+rhel_09_654225: false
+rhel_09_654230: false
+rhel_09_654235: false
+rhel_09_654240: false
+rhel_09_654245: false
+rhel_09_654250: false
+rhel_09_654255: false
+rhel_09_654260: false
+rhel_09_654265: false
+rhel_09_654270: false
+rhel_09_654275: false
+
+# 671xxx - FIPS (must be enabled on host)
+rhel_09_671010: false
+rhel_09_671015: false
+rhel_09_671020: false
+rhel_09_671025: false
+
+# 672xxx - crypto (not required in base container image builds)
+rhel_09_672020: false
+rhel_09_672035: false
+rhel_09_672040: false
+rhel_09_672050: false
