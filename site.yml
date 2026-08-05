@@ -3,6 +3,6 @@
 - name: Apply RHEL9 STIG hardening
   hosts: "{{ hosts | default('all') }}"
   become: true
-  error_ignore: true
+  ignore_errors: true
   roles:
     - role: "{{ playbook_dir }}"
